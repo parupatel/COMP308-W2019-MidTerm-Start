@@ -30,7 +30,7 @@ router.get('/add', (req, res, next) => {
      * ADD CODE HERE *
      *****************/
     res.render('books/add', {
-      title: 'Add a book'
+      title: 'Add New Book'
     });
   
     
@@ -61,6 +61,23 @@ router.get('/:id', (req, res, next) => {
     /*****************
      * ADD CODE HERE *
      *****************/
+    let id = req.params.id;
+    book.findById(id, (err, bookObject) => {
+      if(err) {
+          console.log(err);
+          res.end(err);
+      }
+      else
+      {
+          // show the edit view
+          res.render('books/details', {
+              title: 'Edit Book',
+              books: bookObject
+            
+          });
+      }
+  });
+
 });
 
 // POST - process the information passed from the details form and update the document
@@ -69,8 +86,30 @@ router.post('/:id', (req, res, next) => {
     /*****************
      * ADD CODE HERE *
      *****************/
+    let id = req.params.id;
+    let editBook = book({
+      "_id":id,
+      "Title": req.body.title,
+    "Price": req.body.price,
+    "Author": req.body.author,
+    "Genre": req.body.genre
+
+    }) ;
+    book.update({_id:id},editBook,(err)=> {
+      if(err)
+      {
+        console.log(err);
+        res.end(err);
+    }
+    else
+    {
+      res.redirect('/books');
+      }
+    })
+    
 
 });
+
 
 // GET - process the delete by user id
 router.get('/delete/:id', (req, res, next) => {
@@ -78,7 +117,24 @@ router.get('/delete/:id', (req, res, next) => {
     /*****************
      * ADD CODE HERE *
      *****************/
+    let id = req.params.id;
+    book.remove({_id:id},(err)=>{
+      if(err)
+      {
+      console.log(err);
+        res.end(err);
+    }
+    else
+    {
+      res.redirect('/books');
+      }
+    });
+    
+
 });
+
+  
+
 
 
 module.exports = router;
